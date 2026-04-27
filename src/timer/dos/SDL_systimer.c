@@ -26,7 +26,6 @@
 #include <time.h> /* uclock, uclock_t, UCLOCKS_PER_SEC */
 
 #include "../../core/dos/SDL_dos_scheduler.h"
-#include "../../core/dos/taskman.h"
 
 /* DJGPP's uclock() reprograms PIT channel 0 for a higher tick rate on first
    call, giving ~1.19 MHz resolution (UCLOCKS_PER_SEC == 1193180).  This is
