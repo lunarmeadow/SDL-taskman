@@ -53,11 +53,11 @@ typedef struct task {
 	volatile unsigned int maxPauseTics;
 } task_t;
 
-void TaskMan_DisableTasks(void);
-void TaskMan_EnableTasks(void);
-void TaskMan_AddTask(void (*func)(struct task* this), unsigned long hz, int maxPauseTics);
-void TaskMan_Init(void);
-void TaskMan_Shutdown(void);
-unsigned long TaskMan_GetTics(void);
+extern void TaskMan_DisableTasks(void);
+extern void TaskMan_EnableTasks(void);
+extern void TaskMan_AddTask(void (*func)(struct task* this), unsigned long hz, int maxPauseTics);
+extern void TaskMan_Init(void);
+extern void TaskMan_Shutdown(void);
+extern unsigned long TaskMan_GetTics(void);
 
 #endif // _TASKMAN_H_
