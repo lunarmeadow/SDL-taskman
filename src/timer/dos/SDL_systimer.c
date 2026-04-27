@@ -26,6 +26,7 @@
 #include <time.h> /* uclock, uclock_t, UCLOCKS_PER_SEC */
 
 #include "../../core/dos/SDL_dos_scheduler.h"
+#include "../../core/dos/taskman.h"
 
 /* DJGPP's uclock() reprograms PIT channel 0 for a higher tick rate on first
    call, giving ~1.19 MHz resolution (UCLOCKS_PER_SEC == 1193180).  This is
@@ -34,12 +35,12 @@
 
 Uint64 SDL_GetPerformanceCounter(void)
 {
-    return (Uint64)uclock();
+    return (Uint64)TaskMan_GetTics();
 }
 
 Uint64 SDL_GetPerformanceFrequency(void)
 {
-    return (Uint64)UCLOCKS_PER_SEC;
+    return (Uint64)TASK_TIMER_HZ;
 }
 
 void SDL_SYS_DelayNS(Uint64 ns)
@@ -49,10 +50,10 @@ void SDL_SYS_DelayNS(Uint64 ns)
         return;
     }
 
-    const uclock_t delay_start = uclock();
-    const uclock_t target_ticks = (uclock_t)((ns * UCLOCKS_PER_SEC) / SDL_NS_PER_SECOND);
+    const Uint64 delay_start = TaskMan_GetTics();
+    const Uint64 target_ticks = (Uint64)((ns * TASK_TIMER_HZ) / SDL_NS_PER_SECOND);
 
-    while ((uclock() - delay_start) < target_ticks) {
+    while ((TaskMan_GetTics() - delay_start) < target_ticks) {
         /* Always yield first so cooperative threads can run. */
         DOS_Yield();
 
@@ -60,9 +61,12 @@ void SDL_SYS_DelayNS(Uint64 ns)
            100% CPU when no other threads need to run.  DJGPP's delay()
            is a busy-wait but it does halt-loop on the PIT, which is
            lighter than a tight uclock() poll. */
-        uclock_t remaining = target_ticks - (uclock() - delay_start);
-        if (remaining > (UCLOCKS_PER_SEC / 1000)) {
-            delay(1);
+        Uint64 remaining = target_ticks - (TaskMan_GetTics() - delay_start);
+
+        Uint64 wait = TaskMan_GetTics() + (TASK_TIMER_HZ / 1000);
+
+        if (remaining > (TASK_TIMER_HZ / 1000)) {
+            while(TaskMan_GetTics() <= wait) {} // wait 1 ms (65 taskman tics)
         }
     }
 }
