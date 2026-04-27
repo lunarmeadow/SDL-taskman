@@ -55,6 +55,8 @@ void TaskMan_AddTask(void (*func)(struct task* this), unsigned long hz, int maxP
 
 void __attribute__((hot)) task_irq(void)
 {
+	_disable_irq();
+
 	++irqCount;
 
 	for(int t = 0; t < MAX_TASKS; t++)
@@ -99,6 +101,8 @@ void __attribute__((hot)) task_irq(void)
 		}
 	}
 
+	_enable_irq();
+	
 	// done :3
 	// this calls original dos clock interrupt approximately at original rate
 	serviceCount += serviceRate;
