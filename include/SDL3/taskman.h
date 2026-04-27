@@ -1,7 +1,7 @@
 #ifndef _TASKMAN_H_
 #define _TASKMAN_H_
 
-#define TASK_TIMER_HZ 2000
+#define TASK_TIMER_HZ 1120
 #define SYS_TIMER_HZ 18.2f
 #define PIT_CLOCK 1193182
 #define MAX_UINT32 4294967295
